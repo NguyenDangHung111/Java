@@ -16,9 +16,10 @@ public class Controller_Start_Game {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				view_start_game.dispose();
-				 model_start_game.Stat_Game();
-				 
+				view_start_game.getClip().stop();				
+				model_start_game.Sound_Star();
+				model_start_game.Stat_Game();
+				 view_start_game.dispose();
 			}
 			
 		});
@@ -28,6 +29,7 @@ public class Controller_Start_Game {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				view_start_game.getClip().stop();
 				view_start_game.dispose();
 			}
 			

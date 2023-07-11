@@ -38,6 +38,7 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.UIManager;
+import javax.swing.SwingConstants;
 
 public class View_Server extends JFrame {
 	private JTable TB_Table;
@@ -331,61 +332,73 @@ public class View_Server extends JFrame {
 
 		// TEXTFIELD
 		TF_Question = new JTextField();
+		TF_Question.setHorizontalAlignment(SwingConstants.CENTER);
 		TF_Question.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		TF_Question.setBounds(125, 66, 613, 23);
 		getContentPane().add(TF_Question);
 
 		TF_Answer_A = new JTextField();
+		TF_Answer_A.setHorizontalAlignment(SwingConstants.CENTER);
 		TF_Answer_A.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		TF_Answer_A.setBounds(125, 109, 613, 23);
 		getContentPane().add(TF_Answer_A);
 
 		TF_Answer_B = new JTextField();
+		TF_Answer_B.setHorizontalAlignment(SwingConstants.CENTER);
 		TF_Answer_B.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		TF_Answer_B.setBounds(125, 155, 613, 23);
 		getContentPane().add(TF_Answer_B);
 
 		TF_Answer_C = new JTextField();
+		TF_Answer_C.setHorizontalAlignment(SwingConstants.CENTER);
 		TF_Answer_C.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		TF_Answer_C.setBounds(125, 201, 613, 23);
 		getContentPane().add(TF_Answer_C);
 
 		TF_Answer_D = new JTextField();
+		TF_Answer_D.setHorizontalAlignment(SwingConstants.CENTER);
 		TF_Answer_D.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		TF_Answer_D.setBounds(125, 244, 613, 23);
 		getContentPane().add(TF_Answer_D);
 
 		TF_NumberOfQuestion = new JTextField();
+		TF_NumberOfQuestion.setHorizontalAlignment(SwingConstants.CENTER);
 		TF_NumberOfQuestion.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		TF_NumberOfQuestion.setBounds(125, 287, 613, 23);
 		getContentPane().add(TF_NumberOfQuestion);
 
 		TF_Answer_Correct = new JTextField();
+		TF_Answer_Correct.setHorizontalAlignment(SwingConstants.CENTER);
 		TF_Answer_Correct.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		TF_Answer_Correct.setBounds(916, 66, 598, 23);
 		getContentPane().add(TF_Answer_Correct);
 
 		TF_Ratio_A = new JTextField();
+		TF_Ratio_A.setHorizontalAlignment(SwingConstants.CENTER);
 		TF_Ratio_A.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		TF_Ratio_A.setBounds(916, 109, 598, 23);
 		getContentPane().add(TF_Ratio_A);
 
 		TF_Ratio_B = new JTextField();
+		TF_Ratio_B.setHorizontalAlignment(SwingConstants.CENTER);
 		TF_Ratio_B.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		TF_Ratio_B.setBounds(916, 155, 598, 23);
 		getContentPane().add(TF_Ratio_B);
 
 		TF_Ratio_C = new JTextField();
+		TF_Ratio_C.setHorizontalAlignment(SwingConstants.CENTER);
 		TF_Ratio_C.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		TF_Ratio_C.setBounds(916, 201, 598, 23);
 		getContentPane().add(TF_Ratio_C);
 
 		TF_Ratio_D = new JTextField();
+		TF_Ratio_D.setHorizontalAlignment(SwingConstants.CENTER);
 		TF_Ratio_D.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		TF_Ratio_D.setBounds(916, 247, 598, 23);
 		getContentPane().add(TF_Ratio_D);
 
 		TF_GroupOfQuestion = new JTextField();
+		TF_GroupOfQuestion.setHorizontalAlignment(SwingConstants.CENTER);
 		TF_GroupOfQuestion.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		TF_GroupOfQuestion.setBounds(916, 287, 598, 23);
 		getContentPane().add(TF_GroupOfQuestion);

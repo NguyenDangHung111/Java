@@ -1,14 +1,19 @@
 package Models;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 import Configs.Database_AiLaTrieuPhu;
 import Views.View_Server;
@@ -108,9 +113,20 @@ public class Model_Server {
 					view_server.getTF_Ratio_A().getText(), view_server.getTF_Ratio_B().getText(),
 					view_server.getTF_Ratio_C().getText(), view_server.getTF_Ratio_D().getText());
 		    view_server.setTB_Table(Data());
+		    for (int i = 0; i <  view_server.getTB_Table().getColumnModel().getColumnCount(); i++) {
+				TableColumn column = view_server.getTB_Table().getColumnModel().getColumn(i);
+				DefaultTableCellRenderer renderer1 = new DefaultTableCellRenderer();
+				view_server.getTB_Table().getTableHeader().getDefaultRenderer();
+				renderer1.setFont(new Font("Arial", Font.BOLD, 13));
+				renderer1.setBackground(new Color(44, 136, 190));
+				renderer1.setForeground(Color.WHITE);
+				column.setHeaderRenderer(renderer1);
+				renderer1.setHorizontalAlignment(JLabel.CENTER);
+		    
+		}
 		    JOptionPane.showInternalMessageDialog(null, " CẬP NHẬT THÀNH CÔNG ", "THÔNG BÁO",
 					JOptionPane.CANCEL_OPTION);
-		} catch (Exception e) {
+			}catch (Exception e) {
 			System.out.print(e);
 		}
 		}
@@ -176,6 +192,17 @@ public class Model_Server {
 				
 				this.Add_Answer(view_server);
 				view_server.setTB_Table(Data());
+				  for (int i = 0; i <  view_server.getTB_Table().getColumnModel().getColumnCount(); i++) {
+						TableColumn column = view_server.getTB_Table().getColumnModel().getColumn(i);
+						DefaultTableCellRenderer renderer1 = new DefaultTableCellRenderer();
+						view_server.getTB_Table().getTableHeader().getDefaultRenderer();
+						renderer1.setFont(new Font("Arial", Font.BOLD, 13));
+						renderer1.setBackground(new Color(44, 136, 190));
+						renderer1.setForeground(Color.WHITE);
+						column.setHeaderRenderer(renderer1);
+						renderer1.setHorizontalAlignment(JLabel.CENTER);
+				    
+				}
 			} catch (Exception e) {
 				System.out.println();
 			}
@@ -246,6 +273,17 @@ public class Model_Server {
 			stm_delete_data.executeUpdate("DELETE FROM ta_110_answer WHERE I_ID_ANS = " + i_id_ans);
 
 			view_server.setTB_Table(Data());
+			  for (int i = 0; i <  view_server.getTB_Table().getColumnModel().getColumnCount(); i++) {
+					TableColumn column = view_server.getTB_Table().getColumnModel().getColumn(i);
+					DefaultTableCellRenderer renderer1 = new DefaultTableCellRenderer();
+					view_server.getTB_Table().getTableHeader().getDefaultRenderer();
+					renderer1.setFont(new Font("Arial", Font.BOLD, 13));
+					renderer1.setBackground(new Color(44, 136, 190));
+					renderer1.setForeground(Color.WHITE);
+					column.setHeaderRenderer(renderer1);
+					renderer1.setHorizontalAlignment(JLabel.CENTER);
+			    
+			}
 				JOptionPane.showInternalMessageDialog(null, " XÓA THÀNH CÔNG ", "THÔNG BÁO",
 						JOptionPane.INFORMATION_MESSAGE);
 		} catch (Exception e) {

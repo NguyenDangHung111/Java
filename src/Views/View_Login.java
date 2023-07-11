@@ -47,7 +47,7 @@ public class View_Login extends JFrame {
         BT_Logout.setForeground(new Color(240, 255, 240));
         BT_Logout.setFont(new Font("Tahoma", Font.BOLD, 15));
         BT_Logout.setBackground(new Color(30, 144, 255));
-        BT_Logout.setBounds(521, 423, 164, 41);
+        BT_Logout.setBounds(537, 432, 164, 41);
         panel.add(BT_Logout);
         BT_Logout.setBorder(null);
         BT_Logout.setBorder(BorderFactory.createEmptyBorder());
@@ -104,19 +104,19 @@ public class View_Login extends JFrame {
         panel.add(lblNewLabel_2_1);
         
         TF_Account = new JTextField();
-        TF_Account.setBounds(465, 193, 314, 35);
+        TF_Account.setBounds(465, 193, 314, 25);
         panel.add(TF_Account);
         TF_Account.setColumns(10);
         
         TF_Password = new JPasswordField();
-        TF_Password.setBounds(465, 281, 314, 35);
+        TF_Password.setBounds(465, 281, 314, 25);
         panel.add(TF_Password);
         
          BT_Login = new JButton("ĐĂNG NHẬP");
          BT_Login.setFont(new Font("Tahoma", Font.BOLD, 15));
          BT_Login.setForeground(new Color(240, 255, 255));
          BT_Login.setBackground(new Color(30, 144, 255));
-         BT_Login.setBounds(521, 359, 164, 35);
+         BT_Login.setBounds(537, 351, 164, 41);
         panel.add( BT_Login);
         BT_Login.setBorder(null);
         BT_Login.setBorder(BorderFactory.createEmptyBorder());

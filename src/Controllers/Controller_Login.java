@@ -8,11 +8,9 @@ import Views.View_Login;
 
 public class Controller_Login implements ActionListener {
 	
-private Model_Login model_login;
+private Model_Login model_login = new Model_Login();
 	
 	public Controller_Login(View_Login view_login) {
-		model_login = new Model_Login();
-		model_login.Star_Server();
 		
 		view_login.getBT_Login().addActionListener(new ActionListener() {
          

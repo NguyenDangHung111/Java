@@ -16,6 +16,7 @@ public class Controller_Game_Over {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				view_game_over.getClip().stop();
 				view_game_over.dispose();
 				Model_Game_Over model_game_over = new Model_Game_Over();
 				model_game_over.Exit();

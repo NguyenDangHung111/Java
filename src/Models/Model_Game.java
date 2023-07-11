@@ -1,13 +1,34 @@
 package Models;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.io.File;
+import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Random;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonModel;
 import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.UIManager;
+import javax.swing.plaf.basic.BasicButtonUI;
+
+import com.mysql.cj.x.protobuf.MysqlxNotice.Frame;
 
 import Configs.Database_AiLaTrieuPhu;
 import Controllers.Controller_Game_Over;
@@ -30,6 +51,43 @@ public class Model_Game {
 	private String ratio_B;
 	private String ratio_C;
 	private String ratio_D;
+	private Clip clip;
+	private Clip clip2;
+    private int id;
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public Clip getClip2() {
+		return clip2;
+	}
+
+	public void setClip2(Clip clip2) {
+		this.clip2 = clip2;
+	}
+
+	private Timer timer;
+
+	public Timer getTimer() {
+		return timer;
+	}
+
+	public void setTimer(Timer timer) {
+		this.timer = timer;
+	}
+
+	public Clip getClip() {
+		return clip;
+	}
+
+	public void setClip(Clip clip) {
+		this.clip = clip;
+	}
 
 	public String getRatio_A() {
 		return ratio_A;
@@ -68,38 +126,464 @@ public class Model_Game {
 	}
 
 	// OUT GAME
-	public void Out_Game() {
-		Model_Start_Game model_start = new Model_Start_Game();
-		View_Start_Game view_start_game = new View_Start_Game();
-		Controller_Start_Game controller_start_game = new Controller_Start_Game(view_start_game,model_start);
+	@SuppressWarnings("removal")
+	public void Out_Game(View_Game view_game) {
+		try {
+
+			this.getClip().stop();
+			this.getTimer().stop();
+			// Tạo một mảng các lựa chọn cho Dialog
+			Object[] options = { "CÓ", "KHÔNG" };
+
+			// Hiển thị JOptionPane với hai nút chọn "OK" và "Cancel"
+			int choice = JOptionPane.showOptionDialog(null, "BẠN MUỐN THOÁT ?", "Thông báo", JOptionPane.DEFAULT_OPTION,
+					JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+			// Xử lý kết quả từ người dùng
+			if (choice == JOptionPane.YES_OPTION) {
+				view_game.dispose();
+				getClip2().stop();
+				this.getClip().stop();
+				Model_Start_Game model_start = new Model_Start_Game();
+				View_Start_Game view_start_game = new View_Start_Game();
+				Controller_Start_Game controller_start_game = new Controller_Start_Game(view_start_game, model_start);
+			} else if (choice == JOptionPane.NO_OPTION) {
+				this.getClip().start();
+				this.getTimer().start();
+				getClip2().start();
+			}
+		} catch (Exception ex) {
+			System.out.println(ex);
+		}
+
+	}
+
+	// HELP 50 50
+	public void Sound_50_50() {
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/50_50.wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			clip2 = AudioSystem.getClip();
+			clip2.open(audioIn);
+			clip2.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public void Help_50_50(View_Game view_game) {
+
+		Random random = new Random();
+		String[] arr1 = new String[4];
+		arr1[0] = view_game.getA().getText();
+		arr1[1] = view_game.getB().getText();
+		arr1[2] = view_game.getC().getText();
+		arr1[3] = view_game.getD().getText();
+
+		String[] arr2 = new String[3];
+
+		int count = 0;
+
+		for (int i = 0; i < 4; i++) {
+			if (!arr1[i].equals(this.getAnswer_Correct())) {
+				arr2[count] = arr1[i];
+				count++;
+			}
+		}
+
+		for (int i = 0; i < 2; i++) {
+			if (arr2[i].equals(view_game.getA().getText())) {
+				view_game.getA().setText("");
+			} else if (arr2[i].equals(view_game.getB().getText())) {
+				view_game.getB().setText("");
+			} else if (arr2[i].equals(view_game.getC().getText())) {
+				view_game.getC().setText("");
+			} else if (arr2[i].equals(view_game.getD().getText())) {
+				view_game.getD().setText("");
+			}
+
+		}
+
+	}
+	
+	// SOUND HELP EVERY ONE
+	public void Sound_Every_One() {
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/helpeveryone.wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			clip2 = AudioSystem.getClip();
+			clip2.open(audioIn);
+			clip2.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	// FALSE
-	public void Game_Over() {
+	public void Game_Over(View_Game view_game) {
+		this.getClip2().stop();
 		View_Game_Over view_game_over = new View_Game_Over();
+		view_game_over.Sound_Over2(this.getNumberOfQuestion());
+		view_game_over.getBT_GiaiThuong().setText(view_game.getLB_Money().getText());
 		Controller_Game_Over controller_game_over = new Controller_Game_Over(view_game_over);
 	}
 
-	// TIME
+	// SOUND GAME
+	public void Sound_Game() {
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/nhacnengame.wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			clip2 = AudioSystem.getClip();
+			clip2.open(audioIn);
+			clip2.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// SOUND INCORRECT
+	public void Sound_Incorrect() {
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/traloisai.wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			Clip clip3 = AudioSystem.getClip();
+			clip3.open(audioIn);
+			clip3.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// TIME_SOUND
 	public void LB_CountDown_Time(View_Game view_game) {
 		seconds = 60;
-		Timer timer = new Timer(1000, e -> {
+		timer = new Timer(1000, e -> {
 			seconds--;
 			view_game.getLB_Time().setText(Integer.toString(seconds));
 
-			if (seconds == 0 ) {
+			if (seconds == 0) {
 				((Timer) e.getSource()).stop();
 				// Thực hiện các hành động sau khi kết thúc đếm ngược
 				view_game.dispose();
-				Game_Over();
+				Game_Over(view_game);
 			}
 			if (seconds <= 30) {
 				view_game.getLB_Time().setForeground(Color.red);
+			} else {
+				view_game.getLB_Time().setForeground(Color.green);
 			}
+
 		});
 		timer.start();
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/demnguoc.wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			clip = AudioSystem.getClip();
+			clip.open(audioIn);
+			clip.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
+	// SOUND BUTTON
+	public void Sound_Buttton() {
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/nuttraloi.wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			Clip clip1 = AudioSystem.getClip();
+			clip1.open(audioIn);
+			clip1.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public void Next(View_Game view_game) {
+		this.setNumberOfQuestion(this.getNumberOfQuestion() - 1);
+	}
+
+	// SOUND SELECT A
+	public void Select_A() {
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/selectA.wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			Clip clip1 = AudioSystem.getClip();
+			clip1.open(audioIn);
+			clip1.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// SOUND SELECT B
+	public void Select_B() {
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/selectB .wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			Clip clip1 = AudioSystem.getClip();
+			clip1.open(audioIn);
+			clip1.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// SOUND SELECT C
+	public void Select_C() {
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/selectC.wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			Clip clip1 = AudioSystem.getClip();
+			clip1.open(audioIn);
+			clip1.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// SOUND SELECT D
+	public void Select_D() {
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/selectD.wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			Clip clip1 = AudioSystem.getClip();
+			clip1.open(audioIn);
+			clip1.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// SOUND CORRECT A
+	public void Correct_A() {
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/correctA .wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			Clip clip1 = AudioSystem.getClip();
+			clip1.open(audioIn);
+			clip1.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// SOUND CORRECT B
+	public void Correct_B() {
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/correctB.wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			Clip clip1 = AudioSystem.getClip();
+			clip1.open(audioIn);
+			clip1.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// SOUND CORRECT C
+	public void Correct_C() {
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/correctC.wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			Clip clip1 = AudioSystem.getClip();
+			clip1.open(audioIn);
+			clip1.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// SOUND CORRECT D
+	public void Correct_D() {
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/correctD.wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			Clip clip1 = AudioSystem.getClip();
+			clip1.open(audioIn);
+			clip1.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// SELECT SOUND QUESTION
+	public void Select_Sound(int number) {
+		switch (number) {
+		case 1:
+			Soung_Question1();
+			break;
+		case 2:
+			Soung_Question2();
+			break;
+		case 3:
+			Soung_Question3();
+			break;
+		case 4:
+			Soung_Question4();
+			break;
+		case 5:
+			Soung_Question5();
+			break;
+		case 6:
+			Soung_Question6();
+			break;
+		case 7:
+			Soung_Question7();
+			break;
+		case 8:
+			Soung_Question8();
+			break;
+		case 9:
+			Soung_Question9();
+			break;
+		case 10:
+			Soung_Question10();
+			break;
+
+		}
+	}
+
+	// SOUND QUESTION 1
+	public void Soung_Question1() {
+
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/ch1.wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			Clip clip1 = AudioSystem.getClip();
+			clip1.open(audioIn);
+			clip1.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// SOUND QUESTION 2
+	public void Soung_Question2() {
+
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/ch2.wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			Clip clip1 = AudioSystem.getClip();
+			clip1.open(audioIn);
+			clip1.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// SOUND QUESTION 3
+	public void Soung_Question3() {
+
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/ch3.wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			Clip clip1 = AudioSystem.getClip();
+			clip1.open(audioIn);
+			clip1.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// SOUND QUESTION4
+	public void Soung_Question4() {
+
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/ch4.wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			Clip clip1 = AudioSystem.getClip();
+			clip1.open(audioIn);
+			clip1.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// SOUND QUESTION 5
+	public void Soung_Question5() {
+
+		try {
+			File soundFile = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/ch5.wav");
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			Clip clip1 = AudioSystem.getClip();
+			clip1.open(audioIn);
+			clip1.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// SOUND QUESTION 6
+	public void Soung_Question6() {
+
+		try {
+			File soundFile2 = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/ch6.wav");
+			AudioInputStream audioIn2 = AudioSystem.getAudioInputStream(soundFile2);
+			Clip clip2 = AudioSystem.getClip();
+			clip2.open(audioIn2);
+			clip2.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// SOUND QUESTION 7
+		public void Soung_Question7() {
+
+			try {
+				File soundFile2 = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/ch7.wav");
+				AudioInputStream audioIn2 = AudioSystem.getAudioInputStream(soundFile2);
+				Clip clip2 = AudioSystem.getClip();
+				clip2.open(audioIn2);
+				clip2.start();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		
+		// SOUND QUESTION 8
+		public void Soung_Question8() {
+
+			try {
+				File soundFile2 = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/ch8.wav");
+				AudioInputStream audioIn2 = AudioSystem.getAudioInputStream(soundFile2);
+				Clip clip2 = AudioSystem.getClip();
+				clip2.open(audioIn2);
+				clip2.start();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		
+		// SOUND QUESTION 9
+		public void Soung_Question9() {
+
+			try {
+				File soundFile2 = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/ch9.wav");
+				AudioInputStream audioIn2 = AudioSystem.getAudioInputStream(soundFile2);
+				Clip clip2 = AudioSystem.getClip();
+				clip2.open(audioIn2);
+				clip2.start();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		
+		// SOUND QUESTION 10
+		public void Soung_Question10() {
+
+			try {
+				File soundFile2 = new File("D://Eclipse/AiLaTrieuPhu/src/Sound/ch10.wav");
+				AudioInputStream audioIn2 = AudioSystem.getAudioInputStream(soundFile2);
+				Clip clip2 = AudioSystem.getClip();
+				clip2.open(audioIn2);
+				clip2.start();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+	
 	// MONEY
 	public int Money(int NumberOfQuestion) {
 		int money = 0;
@@ -141,24 +625,21 @@ public class Model_Game {
 	}
 
 	// CHANGE LABEL MONEY
-	public void LB_Money(View_Game view_game) {
-		view_game.getLB_Money().setText(String.valueOf(Money(NumberOfQuestion())) + "$");
+	public void LB_Money(View_Game view_game, int numberOfQuestion) {
+		view_game.getLB_Money().setText(String.valueOf(Money(numberOfQuestion)) + "$");
 	}
 
-//	 CHANGE LABEL NUMBER QUESTION
-	public void LB_Number_Question(View_Game view_game) {
-		view_game.getLB_NumberOfQuestion().setText(String.valueOf(NumberOfQuestion()-2) + "/10");
+	// CHANGE LABEL NUMBER QUESTION
+	public void LB_Number_Question(View_Game view_game, int numberOfQuestion) {
+		view_game.getLB_NumberOfQuestion().setText(String.valueOf(numberOfQuestion) + "/10");
 	}
 
 	// NUMBER OF QUESTION
-	int nmb =numberOfQuestion;
 	public int NumberOfQuestion() {
-		
-		
 		this.setNumberOfQuestion(numberOfQuestion);
-		this.numberOfQuestion ++;
+		this.numberOfQuestion++;
 		return this.getNumberOfQuestion();
-		
+
 	}
 
 	// GROUP OF QUESTION
@@ -197,7 +678,7 @@ public class Model_Game {
 					+ numberofquestion + " AND I_GroupQuestion = " + groupofquestion);
 
 			if (search.next()) {
-				view_game.getLB_Question().setText(search.getString("T_Question"));				
+				view_game.getLB_Question().setText(search.getString("T_Question"));
 			}
 		} catch (Exception e) {
 			System.out.println(e);
@@ -222,7 +703,6 @@ public class Model_Game {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-
 	}
 
 	// ANSWER B
@@ -285,27 +765,30 @@ public class Model_Game {
 
 	}
 
-	// ANSWER CORRECT
+	// ANSWER CORRECT AND RATIO
 	public String Answer_Correct(int numberOfQuestion, int groupOfQuestion) {
-		int id= 0;
+		int id = 0;
 		try {
 			Database_AiLaTrieuPhu connect = new Database_AiLaTrieuPhu();
 			Connection conn = connect.getConnection();
 			Statement stm_Getdata = conn.createStatement();
 
-			ResultSet search_ID = stm_Getdata
-					.executeQuery("SELECT I_ID FROM ta_110_question WHERE I_NumOfQuestion = " + numberOfQuestion
-							+ " AND I_GroupQuestion = " + groupOfQuestion);
-			
+			ResultSet search_ID = stm_Getdata.executeQuery("SELECT I_ID FROM ta_110_question WHERE I_NumOfQuestion = "
+					+ numberOfQuestion + " AND I_GroupQuestion = " + groupOfQuestion);
+
 			if (search_ID.next()) {
-				id =search_ID.getInt("I_ID");
+				id = search_ID.getInt("I_ID");
 			}
-			
+
 			ResultSet search_Answer = stm_Getdata
-					.executeQuery("SELECT T_AnswerCorrect FROM ta_110_answer WHERE I_ID_ANS =" + id);
+					.executeQuery("SELECT * FROM ta_110_answer WHERE I_ID_ANS =" + id);
 
 			if (search_Answer.next()) {
 				this.setAnswer_Correct(search_Answer.getString("T_AnswerCorrect"));
+				this.setRatio_A(search_Answer.getString("T_Ratio_A"));
+				this.setRatio_B(search_Answer.getString("T_Ratio_B"));
+				this.setRatio_C(search_Answer.getString("T_Ratio_C"));
+				this.setRatio_D(search_Answer.getString("T_Ratio_D"));
 			}
 		} catch (Exception e) {
 			System.out.println(e);
@@ -321,58 +804,158 @@ public class Model_Game {
 		return false;
 	}
 
-	// BUTTON A
-	public boolean Button_A(View_Game view_game) {
-		if (Check_Answer(view_game.getA())) {
-			view_game.getA().setBackground(Color.green);
-			view_game.getA().setForeground(Color.white);
-			return true;
-		} else {
-			view_game.getA().setBackground(Color.red);
-			view_game.getA().setForeground(Color.white);
-			return false;
-		}
+	// Reset Button
+	public void Reset_Button(View_Game view_game) {
+		view_game.getA().setForeground(new Color(255, 255, 255));
+		view_game.getA().setBackground(new Color(102, 204, 255));
+		view_game.getA().setFont(new Font("Tahoma", Font.BOLD, 14));
+		view_game.getA().setContentAreaFilled(false);
+		view_game.getA().setBorder(BorderFactory.createEmptyBorder());
+		view_game.getA().setUI(new BasicButtonUI() {
+			@Override
+			public void paint(Graphics g, JComponent c) {
+				Graphics2D g2d = (Graphics2D) g.create();
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				AbstractButton b = (AbstractButton) c;
+				ButtonModel model = b.getModel();
+				int width = b.getWidth();
+				int height = b.getHeight();
+				int arcSize = 50; // Đặt kích thước cong viền ở đây (5px)
+				if (model.isArmed()) {
+					g2d.setColor(Color.lightGray);
+				} else {
+					g2d.setColor(b.getBackground());
+				}
+				g2d.fillRoundRect(0, 0, width - 1, height - 1, arcSize, arcSize);
+				g2d.setColor(b.getForeground());
+				g2d.drawRoundRect(0, 0, width - 1, height - 1, arcSize, arcSize);
+				FontMetrics fm = g2d.getFontMetrics();
+				Rectangle textRect = new Rectangle(width, height);
+				String text = SwingUtilities.layoutCompoundLabel(b, fm, b.getText(), null, // No icon
+						b.getVerticalAlignment(), b.getHorizontalAlignment(), b.getVerticalTextPosition(),
+						b.getHorizontalTextPosition(), textRect, new Rectangle(), textRect, 0);
+				int textX = (width - fm.stringWidth(text)) / 2; // Tính toán vị trí ngang của văn bản
+				int textY = (height - fm.getHeight()) / 2 + fm.getAscent(); // Tính toán vị trí dọc của văn bản
+				g2d.setColor(b.getForeground());
+				g2d.setFont(b.getFont());
+				g2d.drawString(text, textX, textY);
+				g2d.dispose();
+			}
+		});
+		
+		view_game.getB().setForeground(new Color(255, 255, 255));
+		view_game.getB().setBackground(new Color(102, 204, 255));
+		view_game.getB().setFont(new Font("Tahoma", Font.BOLD, 14));
+		view_game.getB().setContentAreaFilled(false);
+		view_game.getB().setBorder(BorderFactory.createEmptyBorder());
+		view_game.getB().setUI(new BasicButtonUI() {
+			@Override
+			public void paint(Graphics g, JComponent c) {
+				Graphics2D g2d = (Graphics2D) g.create();
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				AbstractButton b = (AbstractButton) c;
+				ButtonModel model = b.getModel();
+				int width = b.getWidth();
+				int height = b.getHeight();
+				int arcSize = 50; // Đặt kích thước cong viền ở đây (5px)
+				if (model.isArmed()) {
+					g2d.setColor(Color.lightGray);
+				} else {
+					g2d.setColor(b.getBackground());
+				}
+				g2d.fillRoundRect(0, 0, width - 1, height - 1, arcSize, arcSize);
+				g2d.setColor(b.getForeground());
+				g2d.drawRoundRect(0, 0, width - 1, height - 1, arcSize, arcSize);
+				FontMetrics fm = g2d.getFontMetrics();
+				Rectangle textRect = new Rectangle(width, height);
+				String text = SwingUtilities.layoutCompoundLabel(b, fm, b.getText(), null, // No icon
+						b.getVerticalAlignment(), b.getHorizontalAlignment(), b.getVerticalTextPosition(),
+						b.getHorizontalTextPosition(), textRect, new Rectangle(), textRect, 0);
+				int textX = (width - fm.stringWidth(text)) / 2; // Tính toán vị trí ngang của văn bản
+				int textY = (height - fm.getHeight()) / 2 + fm.getAscent(); // Tính toán vị trí dọc của văn bản
+				g2d.setColor(b.getForeground());
+				g2d.setFont(b.getFont());
+				g2d.drawString(text, textX, textY);
+				g2d.dispose();
+			}
+		});
+		
+		view_game.getC().setForeground(new Color(255, 255, 255));
+		view_game.getC().setBackground(new Color(102, 204, 255));
+		view_game.getC().setFont(new Font("Tahoma", Font.BOLD, 14));
+		view_game.getC().setContentAreaFilled(false);
+		view_game.getC().setBorder(BorderFactory.createEmptyBorder());
+		view_game.getC().setUI(new BasicButtonUI() {
+			@Override
+			public void paint(Graphics g, JComponent c) {
+				Graphics2D g2d = (Graphics2D) g.create();
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				AbstractButton b = (AbstractButton) c;
+				ButtonModel model = b.getModel();
+				int width = b.getWidth();
+				int height = b.getHeight();
+				int arcSize = 50; // Đặt kích thước cong viền ở đây (5px)
+				if (model.isArmed()) {
+					g2d.setColor(Color.lightGray);
+				} else {
+					g2d.setColor(b.getBackground());
+				}
+				g2d.fillRoundRect(0, 0, width - 1, height - 1, arcSize, arcSize);
+				g2d.setColor(b.getForeground());
+				g2d.drawRoundRect(0, 0, width - 1, height - 1, arcSize, arcSize);
+				FontMetrics fm = g2d.getFontMetrics();
+				Rectangle textRect = new Rectangle(width, height);
+				String text = SwingUtilities.layoutCompoundLabel(b, fm, b.getText(), null, // No icon
+						b.getVerticalAlignment(), b.getHorizontalAlignment(), b.getVerticalTextPosition(),
+						b.getHorizontalTextPosition(), textRect, new Rectangle(), textRect, 0);
+				int textX = (width - fm.stringWidth(text)) / 2; // Tính toán vị trí ngang của văn bản
+				int textY = (height - fm.getHeight()) / 2 + fm.getAscent(); // Tính toán vị trí dọc của văn bản
+				g2d.setColor(b.getForeground());
+				g2d.setFont(b.getFont());
+				g2d.drawString(text, textX, textY);
+				g2d.dispose();
+			}
+		});
+		
+		view_game.getD().setForeground(new Color(255, 255, 255));
+		view_game.getD().setBackground(new Color(102, 204, 255));
+		view_game.getD().setFont(new Font("Tahoma", Font.BOLD, 14));
+		view_game.getD().setContentAreaFilled(false);
+		view_game.getD().setBorder(BorderFactory.createEmptyBorder());
+		view_game.getD().setUI(new BasicButtonUI() {
+			@Override
+			public void paint(Graphics g, JComponent c) {
+				Graphics2D g2d = (Graphics2D) g.create();
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				AbstractButton b = (AbstractButton) c;
+				ButtonModel model = b.getModel();
+				int width = b.getWidth();
+				int height = b.getHeight();
+				int arcSize = 50; // Đặt kích thước cong viền ở đây (5px)
+				if (model.isArmed()) {
+					g2d.setColor(Color.lightGray);
+				} else {
+					g2d.setColor(b.getBackground());
+				}
+				g2d.fillRoundRect(0, 0, width - 1, height - 1, arcSize, arcSize);
+				g2d.setColor(b.getForeground());
+				g2d.drawRoundRect(0, 0, width - 1, height - 1, arcSize, arcSize);
+				FontMetrics fm = g2d.getFontMetrics();
+				Rectangle textRect = new Rectangle(width, height);
+				String text = SwingUtilities.layoutCompoundLabel(b, fm, b.getText(), null, // No icon
+						b.getVerticalAlignment(), b.getHorizontalAlignment(), b.getVerticalTextPosition(),
+						b.getHorizontalTextPosition(), textRect, new Rectangle(), textRect, 0);
+				int textX = (width - fm.stringWidth(text)) / 2; // Tính toán vị trí ngang của văn bản
+				int textY = (height - fm.getHeight()) / 2 + fm.getAscent(); // Tính toán vị trí dọc của văn bản
+				g2d.setColor(b.getForeground());
+				g2d.setFont(b.getFont());
+				g2d.drawString(text, textX, textY);
+				g2d.dispose();
+			}
+		});
+		
 	}
 
-	// BUTTON B
-	public boolean Button_B(View_Game view_game) {
-		if (Check_Answer(view_game.getB())) {
-			view_game.getB().setBackground(Color.green);
-			view_game.getB().setForeground(Color.white);
-			return true;
-		} else {
-			view_game.getB().setBackground(Color.red);
-			view_game.getB().setForeground(Color.white);
-			return false;
-		}
-	}
-
-	// BUTTON C
-	public boolean Button_C(View_Game view_game) {
-		if (Check_Answer(view_game.getC())) {
-			view_game.getC().setBackground(Color.green);
-			view_game.getC().setForeground(Color.white);
-			return true;
-		} else {
-			view_game.getC().setBackground(Color.red);
-			view_game.getC().setForeground(Color.white);
-			return false;
-		}
-	}
-
-	//BUTTON D
-		public boolean Button_D(View_Game view_game) {
-			if(Check_Answer(view_game.getD())) {
-				view_game.getD().setBackground(Color.green);
-				view_game.getD().setForeground(Color.white);
-				return true;
-			}else {
-				view_game.getD().setBackground(Color.red);
-				view_game.getD().setForeground(Color.white);
-				return false;
-			}			
-		}
-	
 	public int getSeconds() {
 		return seconds;
 	}
